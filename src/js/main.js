@@ -75,7 +75,8 @@ Date: Thursday 16th Oct 2014
 
     this.angle = Math.atan2(y1 - y0, x1 - x0);
     this.speed = 1.5;
-    this.acceleration = 1.05;
+    this.acceleration = 1.02;
+    this.friction = 0.95;
     this.brightness = random(50,70);
     this.targetRadius = 1;
   };
@@ -93,7 +94,12 @@ Date: Thursday 16th Oct 2014
     }
 
     // Speed up
-    this.speed *= this.acceleration;
+    if (this.distDone <= this.dist * 0.75) {
+      this.speed *= this.acceleration;
+    } else {
+      // Adding friction to the end of the distance.
+      this.speed *= this.friction;
+    }
 
     var vx = Math.cos(this.angle) * this.speed,
         vy = Math.sin(this.angle) * this.speed;
@@ -189,8 +195,9 @@ Date: Thursday 16th Oct 2014
       particles[i].update(i);
     }
 
-    if (fireworks.length < 3) {
+    if (fireworks.length < 6) {
       fireworks.push( new Firework(wScreen/2, hScreen/2 + 100, random(wScreen/2 - 200,  wScreen/2 + 200), random(0, hScreen/4), 50, 12));
+      fireworks.push( new Firework(wScreen/2, hScreen/2 + 100, random(wScreen/2 - 200,  wScreen/2 + 200), random(0, hScreen/4), 300, 2));
     }
   }
 
