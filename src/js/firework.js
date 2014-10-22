@@ -12,36 +12,57 @@ Date: Thursday 16th Oct 2014
 
 (function () {
 
-  window.Firework = function (x0, y0, x1, y1, particles, extension, colour) {
-    // Start point
-    this.x = x0;
-    this.y = y0;
+  /**
+   * Constructor
+   * 
+   * @param options: Object that contains
+   * - x0, y0 : Origin
+   * - x1, y1 : Dest
+   * - particles : Num of particles to display when it explode
+   * - extension : Longitude of each particle
+   * - speed : Speed to apply to get to the destiny. Default: 1.5
+   * - acceleration : Acceleration to apply to the speed. Default: 1.02
+   * - friction : Friction to apply when is closing to the destiny. Default: 0.95
+   * - percentageFriction : Moment to apply friction instead of acceleration. Default: 0.75
+   * - brightness : Brightness applied to the firework. Default: random(50,70)
+   * - hue : Colour applied to the firework. Default: random(380, 420);
+   */
 
-    this.x0 = x0;
-    this.y0 = y0;
+  window.Firework = function (options) {
+    // Start point
+    this.x = options.x0;
+    this.y = options.y0;
+
+    this.x0 = options.x0;
+    this.y0 = options.y0;
     
     // End point
-    this.x1 = x1;
-    this.y1 = y1;
+    this.x1 = options.x1;
+    this.y1 = options.y1;
 
     // Distance
-    this.dist = this.calculateDistance(x0, y0, x1, y1);
+    this.dist = this.calculateDistance(this.x0, this.y0, this.x1, this.y1);
     this.distDone = 0;
 
     // Coordinates
-    this.coordinates = [[this.x, this.y], [this.x, this.y], [this.x, this.y]];
+    this.coordinates = [];
+    var coordinatesCount = 3;
+    while(coordinatesCount--) {
+      this.coordinates.push([this.x, this.y]);
+    }
 
     // Num of particles to display when it explodes and longitude of them.
-    this.particles = particles;
-    this.extension = extension;
+    this.particles = options.particles;
+    this.extension = options.extension;
 
-    this.angle = Math.atan2(y1 - y0, x1 - x0);
-    this.speed = 1.5;
-    this.acceleration = 1.02;
-    this.friction = 0.95;
-    this.brightness = this.random(50,70);
+    this.angle = Math.atan2(this.y1 - this.y0, this.x1 - this.x0);
+    this.speed = options.speed || 1.5;
+    this.acceleration = options.aceleration || 1.02;
+    this.friction = options.friction || 0.95;
+    this.percentageFriction = options.percentageFriction || 0.75;
+    this.brightness = options.brightness || this.random(50,70);
 
-    this.hue = colour || this.random(380, 420);
+    this.hue = options.colour || this.random(20, 80);
   };
 
   Firework.prototype.calculateDistance = function (x0, y0, x1, y1) {
@@ -62,64 +83,39 @@ Date: Thursday 16th Oct 2014
     }
   };
 
-  Firework.prototype.explode = function (collection, index, particlesCollection) {
+  Firework.prototype.explode = function () {
     // create particles
-    var particleCount = this.particles;
+    var particlesCollection = [],
+        particleCount = this.particles;
+
     while(particleCount--) {
-      particlesCollection.push(new Particle(this.x, this.y, this.extension));
+      particlesCollection.push({x: this.x, y: this.y, extension: this.extension});
     };
 
-    if (collection) {
-      collection.splice(index, 1);
-    }
-  }
+    return particlesCollection;
+  };
 
-  Firework.prototype.update = function (collection, index, particlesCollection) {
+  Firework.prototype.update = function () {
     // update coordinate
     this.coordinates.pop();
     this.coordinates.unshift([this.x, this.y]);
 
     this.speedUp();
 
-    // Speed up
-    if (this.distDone <= this.dist * 0.75) {
-      this.speed *= this.acceleration;
-    } else {
-      // Adding friction to the end of the distance.
-      this.speed *= this.friction;
-    }
-
     var vx = Math.cos(this.angle) * this.speed,
-        vy = Math.sin(this.angle) * this.speed;
+        vy = Math.sin(this.angle) * this.speed,
+        particles = [];
 
     this.distDone = this.calculateDistance(this.x0, this.y0, this.x + vx, this.y + vy);
 
     if (this.distDone >= this.dist) {
-      this.explode(collection, index, particlesCollection);
+      particles = this.explode();
     } else {
       this.x += vx;
       this.y += vy;
     }
-  };
 
-  Firework.prototype.getX = function () {
-    return this.x
-  };
-
-  Firework.prototype.getY = function () {
-    return this.y;
-  };
-
-  Firework.prototype.getLastCoordenate = function (index) {
-    return this.coordinates[this.coordinates.length - 1];
-  };
-
-  Firework.prototype.getColour = function () {
-    return this.hue;
-  };
-
-  Firework.prototype.getBrightness = function () {
-    return this.brightness;
+    return particles;
   };
 
   Firework.prototype.draw = function (ctx) {

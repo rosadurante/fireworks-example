@@ -12,22 +12,34 @@ Date: Thursday 16th Oct 2014
 
 (function () {
 
-  window.Particle = function (x, y, extension) {
-    this.x = x;
-    this.y = y;
+  /**
+   * Constructor
+   * 
+   * @param options: Object that contains
+   * - x, y : Origin
+   * - extension : Longitude of the particle
+   * - friction : Friction to apply to the particle. Default: 0.95
+   * - gravity : Gravity to apply to the particle. Default : 1
+   * - hue : Colour applied to the particle. Default: random(380, 420);
+   * - brightness : Brightness applied to the particle. Default: random(50,70)
+   */
+
+  window.Particle = function (options) {
+    this.x = options.x;
+    this.y = options.y;
 
     this.coordinates = [];
-    var coordinatesCount = extension;
+    var coordinatesCount = options.extension;
     while(coordinatesCount--) {
       this.coordinates.push([this.x, this.y]);
     }
 
     this.angle = this.random(0, Math.PI *2);
     this.speed = this.random(1, 10);
-    this.friction = 0.95;
-    this.gravity = 1;
-    this.hue = this.random(380, 420);
-    this.brightness = this.random(50,80);
+    this.friction = options.friction || 0.95;
+    this.gravity = options.gravity || 1;
+    this.hue = options.hue || this.random(20, 80);
+    this.brightness = options.brightness || this.random(50,80);
     this.alpha = 1;
     this.fadeOut = this.random(0.015, 0.03);
   };
@@ -36,7 +48,7 @@ Date: Thursday 16th Oct 2014
     return Math.random() * (max - min) + min;
   };
 
-  Particle.prototype.update = function (collection, index) {
+  Particle.prototype.update = function () {
     this.coordinates.pop();
     this.coordinates.unshift([this.x, this.y]);
     // slow down particle
@@ -46,7 +58,9 @@ Date: Thursday 16th Oct 2014
     this.alpha -= this.fadeOut;
 
     if (this.alpha <= this.fadeOut) {
-      collection.splice(index, 1);
+      return true;
+    } else {
+      return false;
     }
   };
 
