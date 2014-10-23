@@ -74,8 +74,11 @@ Date: Thursday 16th Oct 2014
       y0: this.hScreen/2,
       x1: this.random(this.wScreen/2 - 200, this.wScreen/2 + 200),
       y1: this.random(0, this.hScreen/4),
-      particles: 50,
-      extension: 12
+      particles: {
+        amount: 50,
+        extension: 12,
+        kind: 'line'
+      }
     };
 
     var opt2 = {
@@ -83,18 +86,24 @@ Date: Thursday 16th Oct 2014
       y0: this.hScreen/2,
       x1: this.random(this.wScreen/2 - 200, this.wScreen/2 + 200),
       y1: this.random(0, this.hScreen/4),
-      particles: 300,
-      extension: 2
-    }
+      particles: {
+        amount: 300,
+        extension: 1,
+        kind: 'dot'
+      }
+    };
 
     var opt3 = {
       x0: this.wScreen/2,
       y0: this.hScreen/2,
       x1: this.random(this.wScreen/2 - 200, this.wScreen/2 + 200),
       y1: this.random(0, this.hScreen/4),
-      particles: 600,
-      extension: 2
-    }
+      particles: {
+        amount: 600,
+        extension: 1,
+        kind: 'line'
+      }
+    };
 
     if (this.fireworks.length < 6) {
       this.fireworks.push( new Firework(opt1));

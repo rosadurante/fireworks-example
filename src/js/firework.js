@@ -18,8 +18,7 @@ Date: Thursday 16th Oct 2014
    * @param options: Object that contains
    * - x0, y0 : Origin
    * - x1, y1 : Dest
-   * - particles : Num of particles to display when it explode
-   * - extension : Longitude of each particle
+   * - particles : Object which contains settings to build particles
    * - speed : Speed to apply to get to the destiny. Default: 1.5
    * - acceleration : Acceleration to apply to the speed. Default: 1.02
    * - friction : Friction to apply when is closing to the destiny. Default: 0.95
@@ -53,7 +52,6 @@ Date: Thursday 16th Oct 2014
 
     // Num of particles to display when it explodes and longitude of them.
     this.particles = options.particles;
-    this.extension = options.extension;
 
     this.angle = Math.atan2(this.y1 - this.y0, this.x1 - this.x0);
     this.speed = options.speed || 1.5;
@@ -86,10 +84,13 @@ Date: Thursday 16th Oct 2014
   Firework.prototype.explode = function () {
     // create particles
     var particlesCollection = [],
-        particleCount = this.particles;
+        particleCount = this.particles.amount;
+
+    this.particles.x = this.x;
+    this.particles.y = this.y;
 
     while(particleCount--) {
-      particlesCollection.push({x: this.x, y: this.y, extension: this.extension});
+      particlesCollection.push(this.particles);
     };
 
     return particlesCollection;

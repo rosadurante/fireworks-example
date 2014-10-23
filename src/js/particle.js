@@ -34,6 +34,7 @@ Date: Thursday 16th Oct 2014
       this.coordinates.push([this.x, this.y]);
     }
 
+    this.kind = options.kind;
     this.angle = this.random(0, Math.PI *2);
     this.speed = this.random(1, 10);
     this.friction = options.friction || 0.95;
@@ -41,7 +42,7 @@ Date: Thursday 16th Oct 2014
     this.hue = options.hue || this.random(20, 80);
     this.brightness = options.brightness || this.random(50,80);
     this.alpha = 1;
-    this.fadeOut = this.random(0.015, 0.03);
+    this.fadeOut = this.random(0.01, 0.02);
   };
 
   Particle.prototype.random = function (min, max) {
@@ -67,9 +68,18 @@ Date: Thursday 16th Oct 2014
   Particle.prototype.draw = function (ctx) {
     ctx.beginPath();
     ctx.moveTo(this.coordinates[this.coordinates.length - 1][0], this.coordinates[this.coordinates.length - 1][1]);
-    ctx.lineTo(this.x, this.y);
-    ctx.strokeStyle = 'hsla(' + this.hue + ',100%,' + this.brightness + '%,' + this.alpha + ')';
-    ctx.stroke();
+    switch(this.kind) {
+      case 'dot':
+        ctx.arc(this.x, this.y, 1.5, 0, 2*Math.PI,false);
+        ctx.fillStyle = 'hsla(' + this.hue + ',100%,' + this.brightness + '%,' + this.alpha + ')';
+        ctx.fill();
+        break;
+      case 'line':
+        ctx.lineTo(this.x, this.y);
+        ctx.strokeStyle = 'hsla(' + this.hue + ',100%,' + this.brightness + '%,' + this.alpha + ')';
+        ctx.stroke();
+        break;
+      }
   };
 
 })();
